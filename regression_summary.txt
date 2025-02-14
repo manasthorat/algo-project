@@ -1,0 +1,29 @@
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            Profit/Loss   R-squared:                       0.001
+Model:                            OLS   Adj. R-squared:                  0.000
+Method:                 Least Squares   F-statistic:                     1.610
+Date:                Mon, 10 Feb 2025   Prob (F-statistic):              0.185
+Time:                        17:07:12   Log-Likelihood:                -67810.
+No. Observations:                9586   AIC:                         1.356e+05
+Df Residuals:                    9582   BIC:                         1.357e+05
+Df Model:                           3                                         
+Covariance Type:            nonrobust                                         
+===================================================================================
+                      coef    std err          t      P>|t|      [0.025      0.975]
+-----------------------------------------------------------------------------------
+const             -44.0490     32.094     -1.373      0.170    -106.960      18.862
+Volume Multiple    -0.4603      1.141     -0.404      0.687      -2.696       1.775
+RSI Value           1.0479      0.518      2.023      0.043       0.032       2.063
+Weekly Volume   -4.729e-08   5.15e-08     -0.917      0.359   -1.48e-07    5.38e-08
+==============================================================================
+Omnibus:                    27862.522   Durbin-Watson:                   1.996
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):       3289522952.749
+Skew:                          39.644   Prob(JB):                         0.00
+Kurtosis:                    2871.716   Cond. No.                     6.36e+08
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 6.36e+08. This might indicate that there are
+strong multicollinearity or other numerical problems.

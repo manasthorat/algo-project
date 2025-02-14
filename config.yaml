@@ -1,0 +1,13 @@
+database:
+  dbname: "stock_data"
+  user: "postgres"
+  password: "Jetstar135@"
+  host: "localhost"
+  port: 5432
+
+fetch_settings:
+  period: "5y"
+  csv_file: "stock_list.csv"
+
+
+

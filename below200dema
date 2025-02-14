@@ -1,0 +1,80 @@
+import pandas as pd
+import yfinance as yf
+import concurrent.futures
+from oauth2client.service_account import ServiceAccountCredentials
+import gspread
+def upload_to_google_sheets(df, sheet_name, json_keyfile):
+    # Define scope
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    
+    # Authenticate using the credentials JSON file
+    creds = ServiceAccountCredentials.from_json_keyfile_name(json_keyfile, scope)
+    client = gspread.authorize(creds)
+
+    # Open the Google Sheet (replace with your actual sheet name)
+    sheet = client.open("Daily Tracker").sheet1
+    
+    # Clear existing data
+    sheet.clear()
+    
+    # Insert new data
+    sheet.insert_rows([df.columns.tolist()] + df.values.tolist(), 1)
+    
+    print("Data successfully uploaded to Google Sheets.")
+def get_stock_data(symbol):
+    try:
+        print(f"Fetching data for {symbol}...")
+        stock = yf.Ticker(symbol+".NS")
+        df = stock.history(period="1y")  # Fetch 1 year of data
+        if df.empty:
+            print(f"No data found for {symbol}")
+            return None
+        
+        if len(df) < 200:
+            print(f"Skipping {symbol}, insufficient data for 200-day MA")
+            return None
+        
+        last_close = df["Close"].iloc[-1]
+        last_200_ma = df["Close"].iloc[-200:].mean()  # Calculate only for the last 200 days
+        
+        return symbol, last_close, last_200_ma
+    except Exception as e:
+        print(f"Error fetching data for {symbol}: {e}")
+        return None
+
+def shortlist_stock(symbol):
+    result = get_stock_data(symbol)
+    if result is None:
+        return None
+    
+    symbol, last_close, last_200_ma = result
+    
+    if last_close < 0.85 * last_200_ma:
+        print(f"{symbol} is 10% below 200-day MA")
+        return {"Symbol": symbol, "Close": last_close, "200_MA": last_200_ma}
+    
+    return None
+
+def shortlist_stocks(stock_list_file):
+    stock_list = pd.read_csv(stock_list_file)
+    shortlisted = []
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        print(f"Running with {executor._max_workers} threads")
+        results = list(executor.map(shortlist_stock, stock_list["Symbol"].str.strip()))
+    
+    shortlisted = [res for res in results if res is not None]
+    return pd.DataFrame(shortlisted)
+
+
+if __name__ == "__main__":
+    stock_list_file = "knoxville_stock_list.csv"
+    print("Starting stock screening process...")
+    result = shortlist_stocks(stock_list_file)
+    print("Stock screening completed.")
+
+    # Save locally
+    result.to_csv("shortlisted_stocks.csv", index=False)
+
+    # Upload to Google Sheets
+    upload_to_google_sheets(result, "Daily Tracker", "fluid-arc-392414-406b52f93603.json")  # Replace with your sheet name and credentials file
