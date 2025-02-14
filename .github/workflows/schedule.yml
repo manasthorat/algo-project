@@ -2,8 +2,8 @@ name: Daily Stock Screener
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # Runs every day at 9 AM UTC (2:30 PM IST)
-  workflow_dispatch:  # Allows manual trigger
+    - cron: '0 9 * * *'  # Runs daily at 9 AM UTC (2:30 PM IST)
+  workflow_dispatch:  # Allows manual run
 
 jobs:
   run-script:
@@ -15,11 +15,19 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.9'  # Adjust to your Python version
+          python-version: '3.9'
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt  # Ensure you have a requirements.txt file
+        run: pip install -r requirements.txt
+
+      - name: Check if script exists
+        run: ls -la
+
+      - name: Print Current Directory
+        run: pwd
+
+      - name: Grant execute permission
+        run: chmod +x below200dema.py
 
       - name: Run script
         run: python below200dema.py
