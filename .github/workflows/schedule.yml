@@ -27,7 +27,7 @@ jobs:
         run: pwd
 
       - name: Grant execute permission
-        run: chmod +x below200dema.py
+        run: chmod +x below200dema
 
       - name: Run script
-        run: python below200dema.py
+        run: python below200dema
