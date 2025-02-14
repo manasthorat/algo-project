@@ -22,4 +22,4 @@ jobs:
           pip install -r requirements.txt  # Ensure you have a requirements.txt file
 
       - name: Run script
-        run: below200dema.py
+        run: python below200dema.py
